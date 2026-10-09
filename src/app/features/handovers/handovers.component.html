@@ -1,41 +1,117 @@
 <section class="page-block">
-  <header class="section-head">
+  <header class="section-head d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 p-4 bg-white rounded-4 shadow-sm border">
     <div>
-      <p class="eyebrow">Handover management</p>
-      <h2>Family handovers</h2>
+      <p class="eyebrow text-primary font-weight-bold mb-1">Handover Management</p>
+      <h2 class="fw-bold m-0 text-dark">Family Handovers & Tasks</h2>
+      <p class="text-secondary small m-0 mt-1">Review active responsibility transfers across household members.</p>
     </div>
-    <button class="primary-btn">Create handover</button>
   </header>
 
-  <section class="summary-grid">
-    @for (item of summary; track item.label) {
-      <article class="summary-card">
-        <span>{{ item.label }}</span>
-        <strong>{{ item.value }}</strong>
-      </article>
-    }
+  <!-- Summary Cards -->
+  <section class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+      <div class="summary-card p-3 bg-white rounded-4 border shadow-sm text-center">
+        <span class="text-muted extra-small text-uppercase fw-bold">Open Tasks</span>
+        <strong class="d-block fs-2 text-primary mt-1">{{ handoverService.stats().pending }}</strong>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="summary-card p-3 bg-white rounded-4 border shadow-sm text-center">
+        <span class="text-muted extra-small text-uppercase fw-bold">In Progress</span>
+        <strong class="d-block fs-2 text-info mt-1">{{ handoverService.stats().inProgress }}</strong>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="summary-card p-3 bg-white rounded-4 border shadow-sm text-center">
+        <span class="text-muted extra-small text-uppercase fw-bold">Completed</span>
+        <strong class="d-block fs-2 text-success mt-1">{{ handoverService.stats().completed }}</strong>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="summary-card p-3 bg-white rounded-4 border shadow-sm text-center">
+        <span class="text-muted extra-small text-uppercase fw-bold">Overdue</span>
+        <strong class="d-block fs-2 text-danger mt-1">{{ handoverService.stats().overdue }}</strong>
+      </div>
+    </div>
   </section>
 
-  <section class="content-grid">
-    @for (handover of handovers; track handover.title) {
-      <article class="handover-card">
-        <div class="card-top">
+  <!-- Filter & Search Bar -->
+  <div class="bg-white p-3 rounded-4 shadow-sm border mb-4 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-center">
+    <div class="input-group search-input flex-grow-1">
+      <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+      <input
+        type="text"
+        class="form-control bg-light border-start-0 ps-0"
+        placeholder="Filter handovers by title, assignee, category..."
+        [(ngModel)]="searchQuery"
+      />
+    </div>
+
+    <div class="d-flex gap-2 w-100 w-md-auto">
+      <select class="form-select form-select-sm bg-light" [(ngModel)]="priorityFilter">
+        <option value="All">All Priorities</option>
+        <option value="High">🔴 High Priority</option>
+        <option value="Medium">🟡 Medium Priority</option>
+        <option value="Low">🟢 Low Priority</option>
+      </select>
+
+      <select class="form-select form-select-sm bg-light" [(ngModel)]="statusFilter">
+        <option value="All">All Statuses</option>
+        <option value="Assigned">Assigned</option>
+        <option value="Acknowledged">Acknowledged</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <section class="row g-3">
+    @for (handover of filteredHandovers(); track handover.id) {
+      <div class="col-md-6 col-lg-4">
+        <article class="handover-card p-4 rounded-4 bg-white border shadow-sm d-flex flex-column justify-content-between h-100 transition-all">
           <div>
-            <p class="eyebrow">{{ handover.priority }} priority</p>
-            <h3>{{ handover.title }}</h3>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <span class="badge rounded-pill" [class.bg-danger]="handover.priority === 'High'" [class.bg-warning]="handover.priority === 'Medium'" [class.bg-success]="handover.priority === 'Low'">
+                {{ handover.priority }} Priority
+              </span>
+              <span class="badge bg-primary-subtle text-primary rounded-pill">{{ handover.status }}</span>
+            </div>
+
+            <h4 class="fw-bold text-dark mb-2">{{ handover.title }}</h4>
+            <p class="text-secondary small mb-3">{{ handover.notes }}</p>
           </div>
-          <span class="status-pill" [class.assigned]="handover.status === 'Assigned'" [class.acknowledged]="handover.status === 'Acknowledged'" [class.progress]="handover.status === 'In Progress'">
-            {{ handover.status }}
-          </span>
-        </div>
 
-        <p class="instructions">{{ handover.instructions }}</p>
+          <div class="pt-3 border-top">
+            <div class="meta-row d-flex justify-content-between extra-small text-muted mb-3">
+              <span><i class="bi bi-person-fill text-primary"></i> {{ handover.assignee }}</span>
+              <span><i class="bi bi-clock-fill text-primary"></i> {{ handover.due }}</span>
+            </div>
 
-        <div class="meta-row">
-          <span>Assignee: {{ handover.assignee }}</span>
-          <span>Due: {{ handover.deadline }}</span>
-        </div>
-      </article>
+            <div class="d-flex gap-2 justify-content-between align-items-center">
+              @if (handover.status !== 'Completed') {
+                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 flex-fill fw-bold" (click)="updateStatus(handover, 'Completed')">
+                  <i class="bi bi-check2 me-1"></i> Mark Done
+                </button>
+              } @else {
+                <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>
+              }
+
+              <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1 icon-btn" (click)="deleteTask(handover)" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (filteredHandovers().length === 0) {
+      <div class="col-12 text-center py-5 bg-white rounded-4 border shadow-sm">
+        <i class="bi bi-journal-x fs-1 text-muted"></i>
+        <h5 class="fw-bold mt-2 text-dark">No handovers found</h5>
+        <p class="text-muted small">No items match your search query or filters.</p>
+      </div>
     }
   </section>
 </section>

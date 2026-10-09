@@ -1,67 +1,24 @@
-.page-block {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.date-badge {
+  min-width: 52px;
 }
 
-.section-head h2 {
-  margin: 0;
-  font-size: clamp(1.6rem, 2.2vw, 2.5rem);
+.event-card {
+  transition: all 0.2s ease;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+.event-card:hover {
+  border-color: #3b82f6 !important;
+  transform: translateX(4px);
 }
 
-.day-card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px 16px;
-  box-shadow: 0 12px 25px rgba(28, 35, 52, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.custom-input {
+  border-radius: 10px;
 }
 
-.day-name {
-  color: #6780ad;
-  font-size: 0.8rem;
-  text-transform: uppercase;
+.extra-small {
+  font-size: 0.74rem;
 }
 
-.day-card strong {
-  font-size: 2rem;
-}
-
-.day-card p {
-  margin: 0;
-  color: #4f678d;
-}
-
-.day-card.high {
-  border-top: 4px solid #ef4444;
-}
-
-.day-card.medium {
-  border-top: 4px solid #f59e0b;
-}
-
-.day-card.low {
-  border-top: 4px solid #22c55e;
-}
-
-.eyebrow {
-  margin: 0 0 4px;
-  color: #8aa2d6;
-  text-transform: uppercase;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-}
-
-@media (max-width: 760px) {
-  .calendar-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+.cursor-pointer {
+  cursor: pointer;
 }

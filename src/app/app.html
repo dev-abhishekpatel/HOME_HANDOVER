@@ -1,77 +1,167 @@
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand-block">
-      <div class="brand-mark">H</div>
-      <div>
-        <p class="eyebrow">Family coordination</p>
-        <h1>{{ appName }}</h1>
-      </div>
-    </div>
-
-    <div class="d-flex gap-2 mb-3 sidebar-actions">
-      <button type="button" class="btn btn-light btn-sm flex-fill">
-        <i class="bi bi-arrow-repeat me-1"></i> Sync
-      </button>
-      <button type="button" class="btn btn-outline-light btn-sm flex-fill">
-        <i class="bi bi-person-plus me-1"></i> Invite
-      </button>
-    </div>
-
-    <nav class="nav-panel" aria-label="Main navigation">
-      @for (item of navItems; track item.label) {
-        <a
-          class="nav-item"
-          [routerLink]="item.path"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
-        >
-          <span>{{ item.label }}</span>
-        </a>
-      }
-    </nav>
-
-    <div class="sidebar-card">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <div class="mini-label">This week</div>
-        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Live</span>
-      </div>
-      <div class="mini-value">87%</div>
-      <p>Tasks completed on time</p>
-      <div class="progress mt-3" role="progressbar" aria-label="Weekly completion" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar" style="width: 87%"></div>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main-panel">
-    <div class="top-header d-flex justify-content-between align-items-center mb-4">
-      <div class="status-indicator">
-        <span class="status-dot"></span>
-        System stable
-      </div>
-      <div class="d-flex gap-2 align-items-center">
-        <button type="button" class="btn btn-light btn-sm rounded-pill px-3">
-          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-          Syncing
-        </button>
-        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3">
-          <i class="bi bi-plus-lg me-1"></i> New handover
-        </button>
-      </div>
-    </div>
-
-    <router-outlet />
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div class="toast show align-items-center border-0 shadow-lg" role="alert" aria-live="polite" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body d-flex align-items-center gap-2 text-dark-emphasis">
-            <span class="spinner-border spinner-border-sm text-success" aria-hidden="true"></span>
-            Household sync complete. All members are updated.
-          </div>
-          <button type="button" class="btn-close me-2 m-auto" aria-label="Close"></button>
+@if (isAuthPage()) {
+  <router-outlet />
+} @else {
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-mark">H</div>
+        <div>
+          <p class="eyebrow">Family coordination</p>
+          <h1 class="brand-title">{{ appName }}</h1>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+
+      <div class="d-flex gap-2 sidebar-actions">
+        <button type="button" class="btn btn-light btn-sm flex-fill fw-semibold rounded-3" (click)="triggerSync()" [disabled]="isSyncing">
+          <i class="bi bi-arrow-repeat me-1" [class.spin]="isSyncing"></i> Sync
+        </button>
+        <button type="button" class="btn btn-outline-light btn-sm flex-fill fw-semibold rounded-3" (click)="openInviteModal()">
+          <i class="bi bi-person-plus me-1"></i> Invite
+        </button>
+      </div>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        @for (item of navItems; track item.label) {
+          <a
+            class="nav-item"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+          >
+            <div class="d-flex align-items-center gap-2.5">
+              <i class="bi" [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </div>
+            @if (item.label === 'Notifications' && notificationService.unreadCount() > 0) {
+              <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
+                {{ notificationService.unreadCount() }}
+              </span>
+            }
+          </a>
+        }
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="mini-label">This week</div>
+          <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Live</span>
+        </div>
+        <div class="mini-value">{{ handoverService.stats().completionRate }}%</div>
+        <p class="small">Tasks completed on time</p>
+        <div class="progress mt-2" role="progressbar" aria-label="Weekly completion" [attr.aria-valuenow]="handoverService.stats().completionRate" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" [style.width.%]="handoverService.stats().completionRate"></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <div class="top-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="fw-semibold text-dark">Sharma Household Active</span>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 align-items-center">
+          <!-- Notification Bell Icon Dropdown -->
+          <div class="position-relative">
+            <button
+              type="button"
+              class="btn btn-light btn-sm rounded-circle p-2 position-relative shadow-sm icon-btn"
+              (click)="toggleNotifDropdown()"
+              aria-label="Notifications"
+            >
+              <i class="bi bi-bell-fill fs-6 text-secondary"></i>
+              @if (notificationService.unreadCount() > 0) {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                  {{ notificationService.unreadCount() }}
+                </span>
+              }
+            </button>
+
+            @if (showNotifDropdown) {
+              <div class="dropdown-menu dropdown-menu-end show shadow-lg border-0 rounded-4 p-3 notif-dropdown position-absolute end-0 mt-2">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                  <h6 class="m-0 fw-bold">Notifications</h6>
+                  <button class="btn btn-link btn-sm p-0 text-decoration-none small" (click)="markAllNotificationsRead()">Mark all read</button>
+                </div>
+                <div class="notif-list" style="max-height: 280px; overflow-y: auto;">
+                  @for (n of notificationService.notifications(); track n.id) {
+                    <div class="notif-item p-2 mb-1 rounded-3 d-flex align-items-start gap-2" [class.bg-light]="!n.read">
+                      <span class="badge rounded-circle p-1 mt-1" [class.bg-success]="n.tone === 'success'" [class.bg-warning]="n.tone === 'warning'" [class.bg-info]="n.tone === 'info'"></span>
+                      <div class="flex-grow-1">
+                        <p class="m-0 small text-dark fw-medium">{{ n.message }}</p>
+                        <span class="text-muted extra-small">{{ n.time }}</span>
+                      </div>
+                    </div>
+                  }
+                  @if (notificationService.notifications().length === 0) {
+                    <p class="text-muted small text-center my-3">No notifications right now.</p>
+                  }
+                </div>
+                <div class="pt-2 border-top text-center mt-2">
+                  <a routerLink="/notifications" class="small text-primary text-decoration-none fw-semibold" (click)="showNotifDropdown = false">View all notifications</a>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- New Handover Modal Button -->
+          <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-semibold" (click)="openCreateModal()">
+            <i class="bi bi-plus-lg me-1"></i> New Handover
+          </button>
+
+          <!-- User Profile & Logout Dropdown -->
+          @if (authService.currentUser(); as user) {
+            <div class="position-relative">
+              <button
+                type="button"
+                class="btn btn-light btn-sm rounded-pill px-2 py-1 d-flex align-items-center gap-2 shadow-sm border"
+                (click)="toggleProfileMenu()"
+              >
+                <div class="avatar-sm bg-primary text-white rounded-circle fw-bold d-grid place-items-center">
+                  {{ user.avatar }}
+                </div>
+                <div class="text-start me-1 d-none d-sm-block">
+                  <div class="fw-bold lh-1 text-dark small">{{ user.name }}</div>
+                  <div class="text-muted extra-small">{{ user.role }}</div>
+                </div>
+                <i class="bi bi-chevron-down text-muted small"></i>
+              </button>
+
+              @if (showProfileMenu) {
+                <div class="dropdown-menu dropdown-menu-end show shadow-lg border-0 rounded-4 p-2 profile-dropdown position-absolute end-0 mt-2">
+                  <div class="px-3 py-2 border-bottom">
+                    <p class="fw-bold m-0 text-dark">{{ user.name }}</p>
+                    <p class="text-muted small m-0">{{ user.email }}</p>
+                    <span class="badge bg-primary-subtle text-primary mt-1">{{ user.role }}</span>
+                  </div>
+                  <a routerLink="/settings" class="dropdown-item py-2 rounded-2 mt-1" (click)="showProfileMenu = false">
+                    <i class="bi bi-person-gear me-2 text-primary"></i> Account Settings
+                  </a>
+                  <button type="button" class="dropdown-item text-danger py-2 rounded-2" (click)="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i> Log Out
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <router-outlet />
+    </main>
+  </div>
+}
+
+<!-- Modals & Toasts -->
+@if (showCreateModal) {
+  <app-create-handover-modal (close)="closeCreateModal()"></app-create-handover-modal>
+}
+
+@if (showInviteModal) {
+  <app-invite-member-modal (close)="closeInviteModal()"></app-invite-member-modal>
+}
+
+<app-toast-container></app-toast-container>

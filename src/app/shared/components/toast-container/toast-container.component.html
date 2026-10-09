@@ -1,0 +1,28 @@
+<div class="toast-stack position-fixed bottom-0 end-0 p-3">
+  @for (t of toastService.toasts(); track t.id) {
+    <div
+      class="toast show align-items-center border-0 shadow-lg mb-2"
+      [class.bg-success-subtle]="t.type === 'success'"
+      [class.bg-info-subtle]="t.type === 'info'"
+      [class.bg-warning-subtle]="t.type === 'warning'"
+      [class.bg-danger-subtle]="t.type === 'danger'"
+      role="alert"
+    >
+      <div class="d-flex align-items-center p-3">
+        <div class="toast-body d-flex align-items-center gap-2 text-dark-emphasis p-0 flex-grow-1">
+          @if (t.type === 'success') {
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+          } @else if (t.type === 'warning') {
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+          } @else if (t.type === 'danger') {
+            <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+          } @else {
+            <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+          }
+          <span class="fw-semibold">{{ t.message }}</span>
+        </div>
+        <button type="button" class="btn-close ms-3" (click)="toastService.remove(t.id)" aria-label="Close"></button>
+      </div>
+    </div>
+  }
+</div>

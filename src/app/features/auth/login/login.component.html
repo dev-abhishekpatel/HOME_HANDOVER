@@ -1,21 +1,180 @@
-<section class="auth-shell">
-  <div class="auth-card">
-    <p class="eyebrow">Welcome back</p>
-    <h2>Sign in to Home Handover</h2>
+<section class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="brand-header text-center mb-4">
+        <div class="brand-logo mx-auto mb-2">H</div>
+        <h2 class="fw-bold mb-1">Home Handover</h2>
+        <p class="text-secondary small">Smart Home Responsibility & Task Management</p>
+      </div>
 
-    <form class="auth-form">
-      <label>
-        <span>Email</span>
-        <input type="email" value="meera@homeh.handover" />
-      </label>
+      <!-- Mode Switcher Tabs -->
+      <div class="auth-tabs d-flex p-1 bg-light rounded-pill mb-4">
+        <button
+          type="button"
+          class="btn flex-fill rounded-pill fw-semibold py-2 transition-all"
+          [class.active-tab]="!isSignupMode"
+          (click)="toggleMode(false)"
+        >
+          Sign In
+        </button>
+        <button
+          type="button"
+          class="btn flex-fill rounded-pill fw-semibold py-2 transition-all"
+          [class.active-tab]="isSignupMode"
+          (click)="toggleMode(true)"
+        >
+          Create Account
+        </button>
+      </div>
 
-      <label>
-        <span>Password</span>
-        <input type="password" value="password123" />
-      </label>
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2 px-3 rounded-3 small mb-3 d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
 
-      <button class="primary-btn" type="button" [routerLink]="['/dashboard']">Login</button>
-      <button class="secondary-btn" type="button">Continue with Google</button>
-    </form>
+      <!-- SIGN IN FORM -->
+      @if (!isSignupMode) {
+        <form (ngSubmit)="onLogin()" class="auth-form">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+              <input
+                type="email"
+                class="form-control border-start-0 ps-0 custom-input"
+                placeholder="meera@homehandover.com"
+                [(ngModel)]="loginEmail"
+                name="loginEmail"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label fw-semibold small text-secondary mb-0">Password</label>
+              <a href="javascript:void(0)" class="small text-decoration-none text-primary">Forgot?</a>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control border-start-0 border-end-0 px-0 custom-input"
+                placeholder="••••••••"
+                [(ngModel)]="loginPassword"
+                name="loginPassword"
+                required
+              />
+              <button class="btn btn-outline-secondary border-start-0 bg-white text-muted" type="button" (click)="togglePasswordVisibility()">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-pill fw-bold shadow-sm mb-3">
+            Sign In to Home Handover
+          </button>
+        </form>
+      } @else {
+        <!-- SIGN UP FORM -->
+        <form (ngSubmit)="onSignup()" class="auth-form">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Full Name</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-person"></i></span>
+              <input
+                type="text"
+                class="form-control border-start-0 ps-0 custom-input"
+                placeholder="e.g. Meera Sharma"
+                [(ngModel)]="signupName"
+                name="signupName"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-secondary">Email Address</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+              <input
+                type="email"
+                class="form-control border-start-0 ps-0 custom-input"
+                placeholder="name@example.com"
+                [(ngModel)]="signupEmail"
+                name="signupEmail"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Household Role</label>
+              <select class="form-select custom-input" [(ngModel)]="signupRole" name="signupRole">
+                <option value="Household Admin">Admin</option>
+                <option value="Task Creator">Task Creator</option>
+                <option value="Family Member">Family Member</option>
+                <option value="Guest Access">Guest Access</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small text-secondary">Household Name</label>
+              <input
+                type="text"
+                class="form-control custom-input"
+                placeholder="Sharma Residence"
+                [(ngModel)]="signupHouseholdName"
+                name="signupHouseholdName"
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold small text-secondary">Create Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control border-start-0 border-end-0 px-0 custom-input"
+                placeholder="At least 6 characters"
+                [(ngModel)]="signupPassword"
+                name="signupPassword"
+                required
+              />
+              <button class="btn btn-outline-secondary border-start-0 bg-white text-muted" type="button" (click)="togglePasswordVisibility()">
+                <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 py-2.5 rounded-pill fw-bold shadow-sm mb-3">
+            Create Account & Join Household
+          </button>
+        </form>
+      }
+
+      <!-- QUICK DEMO LOGINS SECTION -->
+      <div class="demo-section pt-3 border-top text-center">
+        <p class="eyebrow mb-2">⚡ Quick 1-Click Demo Profiles</p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <button type="button" class="btn btn-sm btn-outline-dark rounded-pill" (click)="quickDemo('usr_1')">
+            👑 Meera (Admin)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-dark rounded-pill" (click)="quickDemo('usr_2')">
+            ✍️ Aarav (Creator)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-dark rounded-pill" (click)="quickDemo('usr_3')">
+            🌿 Riya (Member)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-dark rounded-pill" (click)="quickDemo('usr_4')">
+            🔒 Kabir (Member)
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

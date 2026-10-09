@@ -1,18 +1,88 @@
 <section class="page-block">
-  <header class="section-head">
+  <header class="section-head d-flex justify-content-between align-items-center mb-4 p-4 bg-white rounded-4 shadow-sm border">
     <div>
-      <p class="eyebrow">Smart calendar</p>
-      <h2>{{ monthLabel }}</h2>
+      <p class="eyebrow text-primary font-weight-bold mb-1">Schedule & Reminders</p>
+      <h2 class="fw-bold m-0 text-dark">{{ monthLabel }}</h2>
     </div>
   </header>
 
-  <section class="calendar-grid">
-    @for (event of events; track event.date) {
-      <article class="day-card" [class.high]="event.type === 'High'" [class.medium]="event.type === 'Medium'" [class.low]="event.type === 'Low'">
-        <span class="day-name">{{ event.day }}</span>
-        <strong>{{ event.date }}</strong>
-        <p>{{ event.title }}</p>
-      </article>
-    }
-  </section>
+  <div class="row g-4">
+    <!-- Quick Add Event Form -->
+    <div class="col-lg-4">
+      <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+        <h4 class="fw-bold mb-3">Schedule Quick Event</h4>
+        <form (ngSubmit)="addQuickEvent()">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Event Title</label>
+            <input
+              type="text"
+              class="form-control form-control-sm custom-input"
+              placeholder="e.g. Electrician arrival check"
+              [(ngModel)]="newEventTitle"
+              name="newEventTitle"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-secondary">Assignee</label>
+            <select class="form-select form-select-sm custom-input" [(ngModel)]="newEventAssignee" name="newEventAssignee">
+              <option value="Meera">Meera</option>
+              <option value="Aarav">Aarav</option>
+              <option value="Riya">Riya</option>
+              <option value="Kabir">Kabir</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-semibold text-secondary">Priority</label>
+            <select class="form-select form-select-sm custom-input" [(ngModel)]="newEventPriority" name="newEventPriority">
+              <option value="High">🔴 High Priority</option>
+              <option value="Medium">🟡 Medium Priority</option>
+              <option value="Low">🟢 Low Priority</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold" [disabled]="!newEventTitle.trim()">
+            <i class="bi bi-calendar-plus me-1"></i> Add to Calendar
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Calendar Events View -->
+    <div class="col-lg-8">
+      <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+        <h4 class="fw-bold mb-4">Upcoming Scheduled Handovers</h4>
+
+        <div class="events-list d-flex flex-column gap-3">
+          @for (event of calendarEvents(); track event.id) {
+            <div
+              class="event-card p-3 rounded-4 border bg-light-subtle d-flex align-items-center justify-content-between gap-3 cursor-pointer"
+              (click)="selectDate(event.date)"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <div class="date-badge text-center p-2 rounded-3 bg-white border shadow-sm">
+                  <span class="d-block extra-small text-muted text-uppercase fw-bold">{{ event.day }}</span>
+                  <strong class="fs-4 text-primary lh-1">{{ event.date }}</strong>
+                </div>
+
+                <div>
+                  <h6 class="fw-bold text-dark m-0">{{ event.title }}</h6>
+                  <span class="text-muted extra-small">Assignee: {{ event.assignee }}</span>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill" [class.bg-danger]="event.type === 'High'" [class.bg-warning]="event.type === 'Medium'" [class.bg-success]="event.type === 'Low'">
+                  {{ event.type }}
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary rounded-pill">{{ event.status }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

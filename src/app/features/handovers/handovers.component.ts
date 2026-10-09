@@ -1,42 +1,56 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HandoverService } from '../../core/services/handover.service';
+import { AuthService } from '../../core/services/auth.service';
+import { Task } from '../../core/models';
 
 @Component({
   selector: 'app-handovers',
   standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './handovers.component.html',
   styleUrl: './handovers.component.css',
 })
 export class HandoversComponent {
-  readonly handovers = [
-    {
-      title: 'Parcel pickup',
-      assignee: 'Aarav',
-      deadline: 'Today • 7:30 PM',
-      priority: 'High',
-      status: 'Assigned',
-      instructions: 'Collect parcel from gate security and bring it inside before 8 PM.',
-    },
-    {
-      title: 'Water plants',
-      assignee: 'Riya',
-      deadline: 'Today • 6:00 PM',
-      priority: 'Medium',
-      status: 'Acknowledged',
-      instructions: 'Use the blue can and check all balcony planters before dinner.',
-    },
-    {
-      title: 'Check gate lock',
-      assignee: 'Kabir',
-      deadline: 'Tomorrow • 8:00 AM',
-      priority: 'High',
-      status: 'In Progress',
-      instructions: 'Verify the latch and send a photo for proof.',
-    },
-  ];
+  readonly handoverService = inject(HandoverService);
+  private authService = inject(AuthService);
 
-  readonly summary = [
-    { label: 'Open', value: '11' },
-    { label: 'Completed', value: '24' },
-    { label: 'Overdue', value: '3' },
-  ];
+  searchQuery = '';
+  priorityFilter = 'All';
+  statusFilter = 'All';
+
+  readonly filteredHandovers = computed(() => {
+    let list = this.handoverService.tasks();
+    const query = this.searchQuery.trim().toLowerCase();
+
+    if (this.priorityFilter !== 'All') {
+      list = list.filter((t) => t.priority === this.priorityFilter);
+    }
+
+    if (this.statusFilter !== 'All') {
+      list = list.filter((t) => t.status === this.statusFilter);
+    }
+
+    if (query) {
+      list = list.filter(
+        (t) =>
+          t.title.toLowerCase().includes(query) ||
+          t.assignee.toLowerCase().includes(query) ||
+          t.notes.toLowerCase().includes(query) ||
+          t.category.toLowerCase().includes(query)
+      );
+    }
+
+    return list;
+  });
+
+  updateStatus(task: Task, newStatus: Task['status']): void {
+    const actor = this.authService.currentUser()?.name.split(' ')[0];
+    this.handoverService.updateTaskStatus(task.id, newStatus, actor);
+  }
+
+  deleteTask(task: Task): void {
+    this.handoverService.deleteTask(task.id);
+  }
 }

@@ -1,0 +1,89 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <div>
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1 mb-1">New Task</span>
+        <h3 class="m-0 font-weight-bold">Create Family Handover</h3>
+      </div>
+      <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="modal-body">
+      <div class="mb-3">
+        <label class="form-label font-weight-semibold">Task Title <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control form-control-lg custom-input"
+          placeholder="e.g., Collect courier from gate security"
+          [(ngModel)]="title"
+          name="title"
+          required
+        />
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-semibold">Assign To</label>
+          <select class="form-select custom-input" [(ngModel)]="assignee" name="assignee">
+            @for (m of members(); track m.id) {
+              <option [value]="m.name.split(' ')[0]">{{ m.name }} ({{ m.role }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label font-weight-semibold">Priority</label>
+          <select class="form-select custom-input" [(ngModel)]="priority" name="priority">
+            <option value="High">🔴 High Priority</option>
+            <option value="Medium">🟡 Medium Priority</option>
+            <option value="Low">🟢 Low Priority</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label font-weight-semibold">Category</label>
+          <select class="form-select custom-input" [(ngModel)]="category" name="category">
+            <option value="Security">🛡️ Security</option>
+            <option value="Plants">🌱 Plants</option>
+            <option value="Utilities">⚡ Utilities</option>
+            <option value="Kitchen">🍳 Kitchen</option>
+            <option value="Grocery">🛒 Grocery</option>
+            <option value="Maintenance">🔧 Maintenance</option>
+            <option value="General">📋 General</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label font-weight-semibold">Due Time / Deadline</label>
+          <input
+            type="text"
+            class="form-control custom-input"
+            placeholder="Today • 8:00 PM"
+            [(ngModel)]="dueTime"
+            name="dueTime"
+          />
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label font-weight-semibold">Instructions / Notes</label>
+        <textarea
+          class="form-control custom-input"
+          rows="3"
+          placeholder="Provide clear steps or instructions for the family member..."
+          [(ngModel)]="notes"
+          name="notes"
+        ></textarea>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-end gap-2 p-0 border-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" [disabled]="!title.trim()">
+          <i class="bi bi-plus-circle me-1"></i> Create Handover
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

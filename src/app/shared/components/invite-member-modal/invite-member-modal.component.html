@@ -1,0 +1,64 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 mb-1">Household Access</span>
+        <h3 class="m-0 font-weight-bold">Invite Family Member</h3>
+      </div>
+      <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label font-weight-semibold">Full Name <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control custom-input"
+          placeholder="e.g., Vikram Sharma"
+          [(ngModel)]="memberName"
+          name="memberName"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label font-weight-semibold">Email Address <span class="text-danger">*</span></label>
+        <input
+          type="email"
+          class="form-control custom-input"
+          placeholder="e.g., vikram@example.com"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label font-weight-semibold">Role Permissions</label>
+        <select class="form-select custom-input" [(ngModel)]="role" name="role">
+          <option value="Family Member">Family Member (Full task completion & creation)</option>
+          <option value="Task Creator">Task Creator (Create & assign tasks)</option>
+          <option value="Household Admin">Household Admin (Full management access)</option>
+          <option value="Guest Access">Guest Access (Read & complete assigned only)</option>
+        </select>
+      </div>
+
+      <div class="mb-4 p-3 bg-light rounded-3 border">
+        <label class="form-label font-weight-semibold text-secondary small text-uppercase m-0">Shareable Invite Link</label>
+        <div class="input-group mt-1">
+          <input type="text" class="form-control form-control-sm bg-white" [value]="inviteLink" readonly />
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="copyInviteLink()">
+            <i class="bi bi-clipboard me-1"></i> Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-end gap-2 p-0 border-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm" [disabled]="!memberName.trim() || !email.trim()">
+          <i class="bi bi-send-fill me-1"></i> Send Invite
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

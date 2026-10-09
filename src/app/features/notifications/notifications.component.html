@@ -1,20 +1,70 @@
 <section class="page-block">
-  <header class="section-head">
+  <header class="section-head d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 p-4 bg-white rounded-4 shadow-sm border">
     <div>
-      <p class="eyebrow">Alerts</p>
-      <h2>Notifications</h2>
+      <p class="eyebrow text-primary font-weight-bold mb-1">System Alerts</p>
+      <h2 class="fw-bold m-0 text-dark">Activity Notifications</h2>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" (click)="markAllRead()">
+        <i class="bi bi-check-all me-1"></i> Mark All Read
+      </button>
+      <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="clearAll()">
+        <i class="bi bi-trash me-1"></i> Clear All
+      </button>
     </div>
   </header>
 
-  <div class="notification-list">
-    @for (item of notifications; track item.message) {
-      <article class="notification-item" [class.success]="item.tone === 'success'" [class.info]="item.tone === 'info'" [class.warning]="item.tone === 'warning'">
-        <span class="dot"></span>
-        <div>
-          <p>{{ item.message }}</p>
-          <small>{{ item.time }}</small>
+  <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+    <!-- Filter Tabs -->
+    <div class="d-flex gap-2 mb-4">
+      <button
+        type="button"
+        class="btn btn-sm rounded-pill px-3 fw-semibold"
+        [class.btn-dark]="filterMode() === 'All'"
+        [class.btn-light]="filterMode() !== 'All'"
+        (click)="setFilter('All')"
+      >
+        All ({{ notificationService.notifications().length }})
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm rounded-pill px-3 fw-semibold"
+        [class.btn-primary]="filterMode() === 'Unread'"
+        [class.btn-light]="filterMode() !== 'Unread'"
+        (click)="setFilter('Unread')"
+      >
+        Unread ({{ notificationService.unreadCount() }})
+      </button>
+    </div>
+
+    <!-- Notification Feed -->
+    <div class="notif-feed d-flex flex-column gap-3">
+      @for (n of filteredNotifications(); track n.id) {
+        <div class="notif-card p-3 rounded-4 border d-flex align-items-center justify-content-between gap-3" [class.bg-light]="!n.read" [class.bg-white]="n.read">
+          <div class="d-flex align-items-center gap-3">
+            <span class="indicator-dot rounded-circle p-2" [class.bg-success]="n.tone === 'success'" [class.bg-warning]="n.tone === 'warning'" [class.bg-info]="n.tone === 'info'"></span>
+            <div>
+              <p class="m-0 fw-semibold text-dark">{{ n.message }}</p>
+              <span class="text-muted extra-small">{{ n.time }}</span>
+            </div>
+          </div>
+
+          @if (!n.read) {
+            <button type="button" class="btn btn-sm btn-link text-primary p-0 text-decoration-none small" (click)="markRead(n)">
+              Mark as read
+            </button>
+          }
         </div>
-      </article>
-    }
+      }
+
+      @if (filteredNotifications().length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-bell-slash fs-1 text-muted"></i>
+          <h6 class="fw-bold mt-2 text-dark">No notifications found</h6>
+          <p class="text-muted small">You are all caught up!</p>
+        </div>
+      }
+    </div>
   </div>
 </section>
