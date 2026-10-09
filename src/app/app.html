@@ -1,0 +1,77 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="brand-mark">H</div>
+      <div>
+        <p class="eyebrow">Family coordination</p>
+        <h1>{{ appName }}</h1>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-3 sidebar-actions">
+      <button type="button" class="btn btn-light btn-sm flex-fill">
+        <i class="bi bi-arrow-repeat me-1"></i> Sync
+      </button>
+      <button type="button" class="btn btn-outline-light btn-sm flex-fill">
+        <i class="bi bi-person-plus me-1"></i> Invite
+      </button>
+    </div>
+
+    <nav class="nav-panel" aria-label="Main navigation">
+      @for (item of navItems; track item.label) {
+        <a
+          class="nav-item"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+        >
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="mini-label">This week</div>
+        <span class="badge rounded-pill bg-success-subtle text-success-emphasis">Live</span>
+      </div>
+      <div class="mini-value">87%</div>
+      <p>Tasks completed on time</p>
+      <div class="progress mt-3" role="progressbar" aria-label="Weekly completion" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: 87%"></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <div class="top-header d-flex justify-content-between align-items-center mb-4">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        System stable
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <button type="button" class="btn btn-light btn-sm rounded-pill px-3">
+          <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+          Syncing
+        </button>
+        <button type="button" class="btn btn-primary btn-sm rounded-pill px-3">
+          <i class="bi bi-plus-lg me-1"></i> New handover
+        </button>
+      </div>
+    </div>
+
+    <router-outlet />
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div class="toast show align-items-center border-0 shadow-lg" role="alert" aria-live="polite" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body d-flex align-items-center gap-2 text-dark-emphasis">
+            <span class="spinner-border spinner-border-sm text-success" aria-hidden="true"></span>
+            Household sync complete. All members are updated.
+          </div>
+          <button type="button" class="btn-close me-2 m-auto" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

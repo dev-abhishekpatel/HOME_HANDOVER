@@ -1,0 +1,41 @@
+<section class="page-block">
+  <header class="section-head">
+    <div>
+      <p class="eyebrow">Handover management</p>
+      <h2>Family handovers</h2>
+    </div>
+    <button class="primary-btn">Create handover</button>
+  </header>
+
+  <section class="summary-grid">
+    @for (item of summary; track item.label) {
+      <article class="summary-card">
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+      </article>
+    }
+  </section>
+
+  <section class="content-grid">
+    @for (handover of handovers; track handover.title) {
+      <article class="handover-card">
+        <div class="card-top">
+          <div>
+            <p class="eyebrow">{{ handover.priority }} priority</p>
+            <h3>{{ handover.title }}</h3>
+          </div>
+          <span class="status-pill" [class.assigned]="handover.status === 'Assigned'" [class.acknowledged]="handover.status === 'Acknowledged'" [class.progress]="handover.status === 'In Progress'">
+            {{ handover.status }}
+          </span>
+        </div>
+
+        <p class="instructions">{{ handover.instructions }}</p>
+
+        <div class="meta-row">
+          <span>Assignee: {{ handover.assignee }}</span>
+          <span>Due: {{ handover.deadline }}</span>
+        </div>
+      </article>
+    }
+  </section>
+</section>

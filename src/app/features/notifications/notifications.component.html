@@ -1,0 +1,20 @@
+<section class="page-block">
+  <header class="section-head">
+    <div>
+      <p class="eyebrow">Alerts</p>
+      <h2>Notifications</h2>
+    </div>
+  </header>
+
+  <div class="notification-list">
+    @for (item of notifications; track item.message) {
+      <article class="notification-item" [class.success]="item.tone === 'success'" [class.info]="item.tone === 'info'" [class.warning]="item.tone === 'warning'">
+        <span class="dot"></span>
+        <div>
+          <p>{{ item.message }}</p>
+          <small>{{ item.time }}</small>
+        </div>
+      </article>
+    }
+  </div>
+</section>

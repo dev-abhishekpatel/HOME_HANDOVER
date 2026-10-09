@@ -1,0 +1,17 @@
+<section class="page-block">
+  <header class="section-head">
+    <div>
+      <p class="eyebrow">Preferences</p>
+      <h2>Settings</h2>
+    </div>
+  </header>
+
+  <section class="settings-grid">
+    @for (item of preferences; track item.label) {
+      <article class="settings-card">
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+      </article>
+    }
+  </section>
+</section>

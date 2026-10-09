@@ -1,0 +1,67 @@
+<section class="page-block">
+  <header class="section-head">
+    <div>
+      <p class="eyebrow">Household</p>
+      <h2>{{ household.name }}</h2>
+    </div>
+    <button class="primary-btn">Invite member</button>
+  </header>
+
+  <section class="summary-grid">
+    <article class="summary-card">
+      <span>Address</span>
+      <strong>{{ household.address }}</strong>
+    </article>
+    <article class="summary-card">
+      <span>Members</span>
+      <strong>{{ household.members }}</strong>
+    </article>
+    <article class="summary-card">
+      <span>Active tasks</span>
+      <strong>{{ household.tasks }}</strong>
+    </article>
+    <article class="summary-card">
+      <span>Completion</span>
+      <strong>{{ household.progress }}</strong>
+    </article>
+  </section>
+
+  <section class="panel-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Access</p>
+          <h3>Family members</h3>
+        </div>
+      </div>
+
+      <div class="member-list">
+        @for (member of members; track member.name) {
+          <div class="member-card">
+            <div class="avatar">{{ member.name.charAt(0) }}</div>
+            <div class="member-copy">
+              <strong>{{ member.name }}</strong>
+              <span>{{ member.role }}</span>
+            </div>
+            <span class="status-pill">{{ member.status }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">History</p>
+          <h3>Invite activity</h3>
+        </div>
+      </div>
+
+      <ul class="activity-list">
+        @for (item of inviteHistory; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+  </section>
+</section>

@@ -1,0 +1,188 @@
+<section class="page-block">
+  <header class="topbar d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <p class="eyebrow text-uppercase mb-2">Overview</p>
+      <h2 class="mb-0 fw-bold">{{ todayLabel }}</h2>
+    </div>
+
+    <div class="topbar-actions d-flex gap-2">
+      <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3">Export</button>
+      <button type="button" class="btn btn-primary btn-sm rounded-pill px-3">Quick handover</button>
+    </div>
+  </header>
+
+  <section class="stats-grid" aria-label="Dashboard metrics">
+    @for (stat of stats; track stat.label) {
+      <article class="stat-card card border-0 shadow-sm h-100" [class]="stat.tone">
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="mb-0 fw-semibold">{{ stat.label }}</p>
+            <span class="badge rounded-pill bg-white text-primary"><i class="bi bi-arrow-up-right"></i></span>
+          </div>
+          <div class="stat-row d-flex align-items-center gap-2 flex-wrap">
+            <strong>{{ stat.value }}</strong>
+            <span class="text-muted">•</span>
+            <small>{{ stat.change }}</small>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+
+  <section class="content-grid">
+    <article class="panel task-panel card border-0 shadow-sm">
+      <div class="panel-head card-header bg-transparent border-0 d-flex justify-content-between align-items-center px-0 pb-3">
+        <div>
+          <p class="eyebrow text-uppercase mb-2">Task board</p>
+          <h3 class="mb-0 h5">Today's responsibilities</h3>
+        </div>
+        <button type="button" class="btn btn-link text-primary text-decoration-none p-0">View all</button>
+      </div>
+
+      <div class="task-list d-flex flex-column gap-3">
+        @for (task of tasks; track task.title) {
+          <div class="task-item card border-0 bg-body-tertiary">
+            <div class="task-main">
+              <div class="task-title-wrap d-flex align-items-center gap-2">
+                <span class="status-dot" [class.completed]="task.status === 'Completed'" [class.pending]="task.status !== 'Completed'"></span>
+                <h4 class="mb-0 h6 fw-bold">{{ task.title }}</h4>
+              </div>
+              <p class="mb-0 text-secondary">{{ task.notes }}</p>
+            </div>
+
+            <div class="task-meta d-flex flex-wrap gap-2">
+              <span class="chip owner badge rounded-pill">{{ task.owner }}</span>
+              <span class="chip due badge rounded-pill">{{ task.due }}</span>
+              <span class="chip priority badge rounded-pill" [class.high]="task.priority === 'High'" [class.medium]="task.priority === 'Medium'" [class.low]="task.priority === 'Low'">
+                {{ task.priority }} priority
+              </span>
+              <span class="status-badge badge rounded-pill" [class.assigned]="task.status === 'Assigned'" [class.acknowledged]="task.status === 'Acknowledged'" [class.in-progress]="task.status === 'In Progress'" [class.completed]="task.status === 'Completed'" [class.overdue]="task.status === 'Overdue'">
+                {{ task.status }}
+              </span>
+            </div>
+
+            <div class="task-actions d-flex gap-2 flex-wrap">
+              <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" (click)="updateTask(task, 'acknowledge')">Acknowledge</button>
+              <button type="button" class="btn btn-primary btn-sm rounded-pill" (click)="updateTask(task, 'complete')">Mark complete</button>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <aside class="panel form-panel card border-0 shadow-sm">
+      <div class="panel-head card-header bg-transparent border-0 px-0 pb-3">
+        <div>
+          <p class="eyebrow text-uppercase mb-2">Quick create</p>
+          <h3 class="mb-0 h5">New handover</h3>
+        </div>
+      </div>
+
+      <form class="handover-form">
+        <label>
+          <span>Task title</span>
+          <input type="text" value="Gift delivery to neighbour" />
+        </label>
+
+        <div class="field-row">
+          <label>
+            <span>Assignee</span>
+            <select>
+              <option>Meera</option>
+              <option>Aarav</option>
+              <option selected>Riya</option>
+              <option>Kabir</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Priority</span>
+            <select>
+              <option>High</option>
+              <option selected>Medium</option>
+              <option>Low</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          <span>Deadline</span>
+          <input type="text" value="Today • 9:00 PM" />
+        </label>
+
+        <label>
+          <span>Instructions</span>
+          <textarea rows="4">Leave the box at the front door and send a photo once delivered.</textarea>
+        </label>
+
+        <div class="form-actions d-flex gap-2 mt-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill">Save draft</button>
+          <button type="submit" class="btn btn-primary btn-sm rounded-pill">Create handover</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+
+  <section class="bottom-grid">
+    <article class="panel card border-0 shadow-sm">
+      <div class="panel-head card-header bg-transparent border-0 px-0 pb-3">
+        <div>
+          <p class="eyebrow text-uppercase mb-2">Household</p>
+          <h3 class="mb-0 h5">Family members</h3>
+        </div>
+      </div>
+
+      <div class="member-list d-flex flex-column gap-3">
+        @for (member of familyMembers; track member.name) {
+          <div class="member-card d-flex align-items-center gap-3">
+            <div class="avatar">{{ member.name.charAt(0) }}</div>
+            <div class="member-copy flex-grow-1">
+              <strong>{{ member.name }}</strong>
+              <span>{{ member.role }}</span>
+            </div>
+            <div class="member-meta text-end">
+              <small>{{ member.tasks }} tasks</small>
+              <em>{{ member.availability }}</em>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel card border-0 shadow-sm">
+      <div class="panel-head card-header bg-transparent border-0 px-0 pb-3">
+        <div>
+          <p class="eyebrow text-uppercase mb-2">Activity</p>
+          <h3 class="mb-0 h5">Recent updates</h3>
+        </div>
+      </div>
+
+      <ul class="activity-list list-unstyled mb-0">
+        @for (item of activity; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+
+    <article class="panel card border-0 shadow-sm">
+      <div class="panel-head card-header bg-transparent border-0 px-0 pb-3">
+        <div>
+          <p class="eyebrow text-uppercase mb-2">Alerts</p>
+          <h3 class="mb-0 h5">Notifications</h3>
+        </div>
+      </div>
+
+      <div class="notification-list d-flex flex-column gap-3">
+        @for (notification of notifications; track notification.message) {
+          <div class="notification-item d-flex align-items-start gap-2" [class.info]="notification.tone === 'info'" [class.success]="notification.tone === 'success'" [class.warning]="notification.tone === 'warning'">
+            <span class="dot"></span>
+            <div>
+              <p>{{ notification.message }}</p>
+              <small>{{ notification.time }}</small>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+</section>

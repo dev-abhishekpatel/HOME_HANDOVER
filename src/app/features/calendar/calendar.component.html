@@ -1,0 +1,18 @@
+<section class="page-block">
+  <header class="section-head">
+    <div>
+      <p class="eyebrow">Smart calendar</p>
+      <h2>{{ monthLabel }}</h2>
+    </div>
+  </header>
+
+  <section class="calendar-grid">
+    @for (event of events; track event.date) {
+      <article class="day-card" [class.high]="event.type === 'High'" [class.medium]="event.type === 'Medium'" [class.low]="event.type === 'Low'">
+        <span class="day-name">{{ event.day }}</span>
+        <strong>{{ event.date }}</strong>
+        <p>{{ event.title }}</p>
+      </article>
+    }
+  </section>
+</section>
